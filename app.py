@@ -217,15 +217,37 @@ if st.button("Perform Clustering"):
         st.write("### Cluster Distribution")
         st.bar_chart(filtered_df['Cluster'].value_counts())
 
-        # PCA Visualization
-        st.write("### PCA Cluster Visualization")
 
-        cluster_plot = perform_clustering(
-            filtered_df,
-            plot=True
-        )
+# ---------------------------------------------------
+# PCA VISUALIZATION
+# ---------------------------------------------------
 
-        st.plotly_chart(cluster_plot)
+if pca_result is not None:
+
+    import plotly.express as px
+    import pandas as pd
+
+    pca_df = pd.DataFrame(
+        pca_result,
+        columns=['PCA1', 'PCA2']
+    )
+
+    pca_df['Cluster'] = labels.astype(str)
+
+    fig = px.scatter(
+        pca_df,
+        x='PCA1',
+        y='PCA2',
+        color='Cluster',
+        title='PCA Cluster Visualization'
+    )
+
+    st.plotly_chart(fig)
+
+else:
+
+    st.warning("PCA visualization unavailable.")
+
 
 # ---------------------------------------------------
 # LOAD SAVED MODEL
