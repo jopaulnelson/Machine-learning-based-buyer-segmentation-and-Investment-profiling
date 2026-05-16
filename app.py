@@ -60,14 +60,42 @@ with col2:
     st.write("Shape:", properties_df.shape)
 
 # ---------------------------------------------------
-# MERGE DATASETS
+# CHECK COMMON COLUMNS
 # ---------------------------------------------------
-if 'client_id' in common_columns: 
-    full_df = clients_df.merge( 
-        properties_df, on='client_id', how='left' ) 
-    st.success("Datasets merged successfully using client_id!") 
-else: 
-    st.warning( "client_id column not found in both datasets. " "Using clients dataset only." ) 
+
+st.write("Clients Columns:", clients_df.columns.tolist())
+st.write("Properties Columns:", properties_df.columns.tolist())
+
+# Find common columns
+common_columns = list(
+    set(clients_df.columns).intersection(
+        set(properties_df.columns)
+    )
+)
+
+st.write("Common Columns:", common_columns)
+
+# ---------------------------------------------------
+# MERGE DATASETS SAFELY
+# ---------------------------------------------------
+
+if 'client_id' in common_columns:
+
+    full_df = clients_df.merge(
+        properties_df,
+        on='client_id',
+        how='left'
+    )
+
+    st.success("Datasets merged successfully using client_id!")
+
+else:
+
+    st.warning(
+        "client_id column not found in both datasets. "
+        "Using clients dataset only."
+    )
+
     full_df = clients_df.copy()
     
 # ---------------------------------------------------
