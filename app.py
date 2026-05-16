@@ -194,15 +194,18 @@ if st.button("Run EDA"):
 
     st.success("EDA Completed Successfully!")
 
+
 # ---------------------------------------------------
 # CLUSTERING SECTION
 # ---------------------------------------------------
+
 st.subheader("🤖 Clustering Analysis")
 
 if st.button("Perform Clustering"):
 
     with st.spinner("Running clustering model..."):
 
+        # Run clustering
         model, labels, pca_result = perform_clustering(filtered_df)
 
         # Save model
@@ -213,40 +216,47 @@ if st.button("Perform Clustering"):
         # Add cluster labels
         filtered_df['Cluster'] = labels
 
-        # Cluster Distribution
+        # ---------------------------------------------------
+        # CLUSTER DISTRIBUTION
+        # ---------------------------------------------------
+
         st.write("### Cluster Distribution")
-        st.bar_chart(filtered_df['Cluster'].value_counts())
 
+        st.bar_chart(
+            filtered_df['Cluster'].value_counts()
+        )
 
-# ---------------------------------------------------
-# PCA VISUALIZATION
-# ---------------------------------------------------
+        # ---------------------------------------------------
+        # PCA VISUALIZATION
+        # ---------------------------------------------------
 
-if pca_result is not None:
+        if pca_result is not None:
 
-    import plotly.express as px
-    import pandas as pd
+            import plotly.express as px
+            import pandas as pd
 
-    pca_df = pd.DataFrame(
-        pca_result,
-        columns=['PCA1', 'PCA2']
-    )
+            pca_df = pd.DataFrame(
+                pca_result,
+                columns=['PCA1', 'PCA2']
+            )
 
-    pca_df['Cluster'] = labels.astype(str)
+            pca_df['Cluster'] = labels.astype(str)
 
-    fig = px.scatter(
-        pca_df,
-        x='PCA1',
-        y='PCA2',
-        color='Cluster',
-        title='PCA Cluster Visualization'
-    )
+            fig = px.scatter(
+                pca_df,
+                x='PCA1',
+                y='PCA2',
+                color='Cluster',
+                title='PCA Cluster Visualization'
+            )
 
-    st.plotly_chart(fig)
+            st.plotly_chart(fig)
 
-else:
+        else:
 
-    st.warning("PCA visualization unavailable.")
+            st.warning(
+                "PCA visualization unavailable."
+            )
 
 
 # ---------------------------------------------------
