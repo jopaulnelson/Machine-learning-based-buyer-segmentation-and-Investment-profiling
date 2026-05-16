@@ -1,6 +1,8 @@
 import pandas as pd
 import joblib
 from utils import run_clustering
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
 
 def load_data():
     clients = pd.read_csv('clients.csv')
@@ -10,6 +12,15 @@ def load_data():
 def show_data(df):
     st.write(df.head(10))
     st.write(f"Shape: {df.shape}")
+
+def run_clustering(data, n_clusters=4):
+    # Apply KMeans clustering
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+    labels = kmeans.fit_predict(data)
+    # Optional: reduce dimensions for visualization
+    pca = PCA(n_components=2)
+    pca_result = pca.fit_transform(data)
+    return kmeans, labels, pca_result
 
 def run_eda(df):
     from eda import plot_missing_values, plot_correlation_heatmap, plot_distributions, buyer_analysis
