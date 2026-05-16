@@ -63,31 +63,35 @@ def plot_correlation_heatmap(df):
 
 def plot_distributions(df):
 
-    columns_to_plot = [
-        'floor_area_sqft',
-        'sale_price',
-        'satisfaction_score',
-        'age'
-    ]
+    import plotly.express as px
+    import streamlit as st
 
-    for col in columns_to_plot:
+    # Get numeric columns only
+    numeric_cols = df.select_dtypes(
+        include=['number']
+    ).columns
 
-        # Check if column exists
-        if col in df.columns:
+    if len(numeric_cols) == 0:
 
-            st.subheader(f"Distribution of {col}")
+        st.warning(
+            "No numeric columns available."
+        )
 
-            fig = px.histogram(
-                df,
-                x=col,
-                nbins=30,
-                title=f"Distribution of {col}"
-            )
+        return
 
-            st.plotly_chart(fig)
+    # Create histogram for each numeric column
+    for col in numeric_cols:
 
-        else:
-            st.warning(f"Column '{col}' not found in dataset.")
+        st.subheader(f"Distribution of {col}")
+
+        fig = px.histogram(
+            df,
+            x=col,
+            nbins=30,
+            title=f"Distribution of {col}"
+        )
+
+        st.plotly_chart(fig)
 
 # ---------------------------------------------------
 # BUYER ANALYSIS
