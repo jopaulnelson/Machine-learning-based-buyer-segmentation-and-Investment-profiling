@@ -1,5 +1,6 @@
 import pandas as pd
 import joblib
+from utils import run_clustering
 
 def load_data():
     clients = pd.read_csv('clients.csv')
