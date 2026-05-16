@@ -62,13 +62,14 @@ with col2:
 # ---------------------------------------------------
 # MERGE DATASETS
 # ---------------------------------------------------
-try:
-    full_df = clients_df.merge(properties_df, on='client_id', how='left')
-    st.success("Datasets merged successfully!")
-except Exception as e:
-    st.error(f"Error merging datasets: {e}")
-    st.stop()
-
+if 'client_id' in common_columns: 
+    full_df = clients_df.merge( 
+        properties_df, on='client_id', how='left' ) 
+    st.success("Datasets merged successfully using client_id!") 
+else: 
+    st.warning( "client_id column not found in both datasets. " "Using clients dataset only." ) 
+    full_df = clients_df.copy()
+    
 # ---------------------------------------------------
 # SIDEBAR FILTERS
 # ---------------------------------------------------
