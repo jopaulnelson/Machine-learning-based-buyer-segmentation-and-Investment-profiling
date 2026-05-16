@@ -4,6 +4,11 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 
+def load_data():
+    clients = pd.read_csv('clients.csv')
+    properties = pd.read_csv('properties.csv')
+    return clients, properties
+    
 def handle_missing_data(df):
     """
     Fill missing values for categorical and numeric columns.
