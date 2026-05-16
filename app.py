@@ -24,7 +24,7 @@ clients_df, properties_df = load_datasets()
 st.write("Clients Data Columns:", clients_df.columns)
 st.write("Properties Data Columns:", properties_df.columns)
 # Merge datasets on client_id
-full_df = clients_df.merge(properties_df, on=client_id, how='left')
+full_df = clients_df.merge(properties_df, on='client_id', how='left')
 
 # Apply filters
 if country_filter:
