@@ -8,6 +8,17 @@ def load_data():
     clients = pd.read_csv('clients.csv')
     properties = pd.read_csv('properties.csv')
     return clients, properties
+
+def show_data(df):
+    st.write(df.head(10))
+    st.write(f"Shape: {df.shape}")
+\
+def run_eda(df):
+    from eda import plot_missing_values, plot_correlation_heatmap, plot_distributions, buyer_analysis
+    plot_missing_values(df)
+    plot_correlation_heatmap(df)
+    plot_distributions(df)
+    buyer_analysis(df)
     
 def handle_missing_data(df):
     """
