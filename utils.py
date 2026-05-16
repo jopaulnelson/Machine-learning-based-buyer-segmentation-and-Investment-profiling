@@ -1,5 +1,6 @@
 import pandas as pd
 import joblib
+import matplotlib.pyplot as plt
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
@@ -12,13 +13,25 @@ def load_data():
 def show_data(df):
     st.write(df.head(10))
     st.write(f"Shape: {df.shape}")
-\
+
 def run_eda(df):
     from eda import plot_missing_values, plot_correlation_heatmap, plot_distributions, buyer_analysis
     plot_missing_values(df)
     plot_correlation_heatmap(df)
     plot_distributions(df)
     buyer_analysis(df)
+
+def plot_clusters(pca_result, labels):
+    """
+    Plot PCA-reduced data with cluster labels.
+    """
+    plt.figure(figsize=(8,6))
+    scatter = plt.scatter(pca_result[:, 0], pca_result[:, 1], c=labels, cmap='viridis', alpha=0.7)
+    plt.xlabel('Principal Component 1')
+    plt.ylabel('Principal Component 2')
+    plt.title('Clusters PCA Plot')
+    plt.legend(*scatter.legend_elements(), title='Clusters')
+    plt.show()
     
 def handle_missing_data(df):
     """
