@@ -1,4 +1,4 @@
-```python
+
 import streamlit as st
 import pandas as pd
 import joblib
@@ -234,6 +234,6 @@ st.markdown("---")
 st.write(
     "Built with Streamlit | Machine Learning Buyer Segmentation Project"
 )
-```
+
 
       
