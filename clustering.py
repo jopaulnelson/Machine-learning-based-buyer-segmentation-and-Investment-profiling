@@ -1,57 +1,117 @@
+
+import pandas as pd
+import streamlit as st
+
+from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
-from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
-import matplotlib.pyplot as plt
-import plotly.express as px
-import joblib
-import numpy as np
+
+# ---------------------------------------------------
+# CLUSTERING FUNCTION
+# ---------------------------------------------------
 
 def perform_clustering(df):
-    # Prepare data
-    features = df.select_dtypes(include='number')
-    # Find optimal clusters
-    sse = []
-    silhouette_scores = []
-    k_range = range(2, 10)
-    for k in k_range:
-        km = KMeans(n_clusters=k, random_state=42)
-        km.fit(features)
-        sse.append(km.inertia_)
-        score = silhouette_score(features, km.labels_)
-        silhouette_scores.append(score)
 
-    # Plot Elbow
-    plt.figure()
-    plt.plot(k_range, sse, 'bx-')
-    plt.xlabel('k')
-    plt.ylabel('Sum of Squared Errors (SSE)')
-    plt.title('Elbow Method for KMeans')
-    plt.savefig('elbow.png')
+    # Make copy
+    data = df.copy()
 
-    # Choose best k based on silhouette
-    best_k = k_range[np.argmax(silhouette_scores)]
-    km = KMeans(n_clusters=best_k, random_state=42)
+    # ---------------------------------------------------
+    # DROP UNNECESSARY COLUMNS
+    # ---------------------------------------------------
+
+    drop_cols = [
+        'client_id',
+        'first_name',
+        'last_name'
+    ]
+
+    for col in drop_cols:
+        if col in data.columns:
+            data.drop(columns=col, inplace=True)
+
+    # ---------------------------------------------------
+    # HANDLE DATE OF BIRTH -> AGE
+    # ---------------------------------------------------
+
+    if 'date_of_birth' in data.columns:
+
+        data['date_of_birth'] = pd.to_datetime(
+            data['date_of_birth'],
+            errors='coerce'
+        )
+
+        current_year = pd.Timestamp.now().year
+
+        data['age'] = (
+            current_year -
+            data['date_of_birth'].dt.year
+        )
+
+        data.drop(columns=['date_of_birth'], inplace=True)
+
+    # ---------------------------------------------------
+    # ENCODE CATEGORICAL COLUMNS
+    # ---------------------------------------------------
+
+    categorical_cols = data.select_dtypes(
+        include=['object']
+    ).columns
+
+    encoder = LabelEncoder()
+
+    for col in categorical_cols:
+
+        data[col] = data[col].astype(str)
+
+        data[col] = encoder.fit_transform(data[col])
+
+    # ---------------------------------------------------
+    # HANDLE MISSING VALUES
+    # ---------------------------------------------------
+
+    data.fillna(0, inplace=True)
+
+    # ---------------------------------------------------
+    # FEATURE SCALING
+    # ---------------------------------------------------
+
+    scaler = StandardScaler()
+
+    features = scaler.fit_transform(data)
+
+    # ---------------------------------------------------
+    # KMEANS CLUSTERING
+    # ---------------------------------------------------
+
+    km = KMeans(
+        n_clusters=4,
+        random_state=42,
+        n_init=10
+    )
+
     km.fit(features)
 
-    # PCA for visualization
-    pca = PCA(n_components=2)
-    pca_result = pca.fit_transform(features)
+    # ---------------------------------------------------
+    # PCA VISUALIZATION
+    # ---------------------------------------------------
+
+    n_features = features.shape[1]
+
+    # PCA requires at least 2 features
+    if n_features >= 2:
+
+        pca = PCA(n_components=2)
+
+        pca_result = pca.fit_transform(features)
+
+    else:
+
+        st.warning(
+            "Not enough features for PCA visualization."
+        )
+
+        pca_result = None
 
     return km, km.labels_, pca_result
 
-def plot_clusters(labels, pca=False, pca_data=None):
-    if pca and pca_data is not None:
-        df_plot = pd.DataFrame(pca_data, columns=['PC1', 'PC2'])
-        df_plot['cluster'] = labels
-        fig = px.scatter(df_plot, x='PC1', y='PC2', color='cluster', title='KMeans Clusters (PCA)')
-        return fig
-    else:
-        # Placeholder
-        pass
 
-def save_model(model, filename='model.pkl'):
-    joblib.dump(model, filename)
-
-def load_model(filename='model.pkl'):
-    return joblib.load(filename)
