@@ -22,9 +22,9 @@ def perform_clustering(df):
     model, labels, pca_result = perform_clustering(df)
     return model, labels, pca_result
 
-def save_model(clustering_model,buyer_segmentation_model.pkl)
-    joblib.dump(clustering_model,buyer_segmentation_model.pkl)
+def save_model(clustering_model,buyer_segmentation_model_pkl)
+    joblib.dump(clustering_model,buyer_segmentation_model_pkl)
 
-def load_model('buyer_segmentation_model.pkl')
-    return joblib.load('buyer_segmentation_model.pkl')
+def load_model(buyer_segmentation_model_pkl)
+    return joblib.load(buyer_segmentation_model_pkl)
       
